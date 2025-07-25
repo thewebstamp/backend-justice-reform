@@ -10,11 +10,14 @@ app.use(express.json());
 // Email transporter setup
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
+  port: 587,
+  secure: false, // use STARTTLS
   auth: {
     user: process.env.NOTIFY_EMAIL,
     pass: process.env.NOTIFY_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false,
   },
 });
 
@@ -25,6 +28,23 @@ transporter.verify((error, success) => {
     console.log('✅ Ready to send emails');
   }
 });
+
+//test
+app.get('/test-email', async (req, res) => {
+  try {
+    await transporter.sendMail({
+      from: `Test <${process.env.NOTIFY_EMAIL}>`,
+      to: process.env.NOTIFY_SEMAIL,
+      subject: 'Test Email',
+      text: 'This is a test email from your Nodemailer setup.',
+    });
+    res.send('Email sent successfully!');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Failed to send test email.');
+  }
+});
+
 
 // Stay Informed subscription route
 app.post('/api/subscribe', async (req, res) => {
