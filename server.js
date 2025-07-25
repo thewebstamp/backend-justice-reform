@@ -78,6 +78,36 @@ app.post('/api/protest-signup', async (req, res) => {
   }
 });
 
+// Donation form
+app.post('/api/donate', async (req, res) => {
+  const { name, contact, message } = req.body;
+
+  if (!name || !contact || !message) {
+    return res.status(400).json({ message: 'Please fill in all fields.' });
+  }
+
+  const mailOptions = {
+    from: `"Justice Reform Contact Form" <${process.env.NOTIFY_EMAIL}>`,
+    to: process.env.NOTIFY_SEMAIL,
+    subject: 'New Donation/Assistance Offer',
+    html: `
+      <h2>Donation Assistance Form</h2>
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Email or Phone:</strong> ${contact}</p>
+      <p><strong>Message:</strong><br/>${message}</p>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: 'Donation form submitted successfully.' });
+  } catch (err) {
+    console.error('Donation form error:', err.message);
+    res.status(500).json({ message: 'Email could not be sent. Try again later.' });
+  }
+});
+
+
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
