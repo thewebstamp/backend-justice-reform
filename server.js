@@ -29,22 +29,6 @@ transporter.verify((error, success) => {
   }
 });
 
-//test
-app.get('/test-email', async (req, res) => {
-  try {
-    await transporter.sendMail({
-      from: `Test <${process.env.NOTIFY_EMAIL}>`,
-      to: process.env.NOTIFY_SEMAIL,
-      subject: 'Test Email',
-      text: 'This is a test email from your Nodemailer setup.',
-    });
-    res.send('Email sent successfully!');
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Failed to send test email.');
-  }
-});
-
 
 // Stay Informed subscription route
 app.post('/api/subscribe', async (req, res) => {
