@@ -4,7 +4,23 @@ const cors = require('cors');
 const nodemailer = require('nodemailer');
 
 const app = express();
-app.use(cors());
+const allowedOrigins = [
+  'https://justice-reform-arkansas.netlify.app'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow server-to-server or curl (no origin)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
 app.use(express.json());
 
 // Email transporter setup
